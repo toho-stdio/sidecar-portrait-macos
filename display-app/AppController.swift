@@ -35,7 +35,7 @@ final class AppController: ObservableObject {
     init() {
         UserDefaults.standard.register(defaults: [
             "vdPortrait": true,
-            "vdFrameRate": 120.0,
+            "vdFrameRate": 60.0,
             "vdHiDPI": true,
             "vdName": "Virtual Portrait",
             "vdPPI": 264,

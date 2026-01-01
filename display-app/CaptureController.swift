@@ -52,7 +52,7 @@ final class CaptureController: NSObject, SCStreamOutput {
         configuration.capturesAudio = false
         configuration.queueDepth = 3
         configuration.pixelFormat = kCVPixelFormatType_32BGRA
-        configuration.showsCursor = false
+        configuration.showsCursor = true
 
         if let mode = CGDisplayCopyDisplayMode(displayID) {
             configuration.width = mode.pixelWidth
