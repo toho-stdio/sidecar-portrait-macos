@@ -1,7 +1,7 @@
 # Rotated Sidecar (display-app)
 
 MacOS app that captures a virtual portrait display, rotates it, and shows it full-screen on a Sidecar display. It uses ScreenCaptureKit for capture and Metal for rotation/rendering.
-
+Heavily inspired by BetterDisplay sidecar portrait method https://github.com/waydabber/BetterDisplay/wiki/Rotated-Sidecar
 ## Requirements
 
 - macOS 14+
@@ -13,6 +13,22 @@ MacOS app that captures a virtual portrait display, rotates it, and shows it ful
 1. Open `display-app/display-app.xcodeproj` in Xcode.
 2. Build and run the `display-app` target.
 3. When prompted, grant Screen Recording permission.
+
+## Quick Start & Best Practices
+
+Follow this workflow to set up your environment correctly:
+
+1.  **Connect Sidecar**: Connect your iPad to your Mac and enable Sidecar (Extended Display mode).
+2.  **Isolate Sidecar Display (Crucial)**:
+    *   Open **System Settings > Displays > Arrange**.
+    *   **Goal**: Prevent your mouse from accidentally moving to the real iPad screen (which is just showing a video feed).
+    *   **Action**: Drag the **Sidecar Display** to a far corner (e.g., bottom-right diagonal) where you are unlikely to move your mouse.
+3.  **Create Display**: In the app, click **Create Virtual Display**.
+4.  **Arrange Virtual Display**:
+    *   Back in System Settings, you will see a new display.
+    *   Place this **Virtual Display** comfortably next to your main monitor. This is the screen you will actually use.
+5.  **Rotate**: If the orientation is wrong (e.g., Landscape vs Portrait), click **Rotate Virtual Display**.
+6.  **Final Sync**: Click **Restart Capture** to ensure the video feed is perfectly aligned.
 
 ## Usage Guide
 
