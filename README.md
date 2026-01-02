@@ -8,6 +8,9 @@ Heavily inspired by BetterDisplay sidecar portrait method https://github.com/way
 - Sidecar-enabled iPad
 - Screen Recording permission (prompted on first run)
 
+## Install
+- Download and open built app zip https://github.com/toho-stdio/sidecar-portrait-macos-source/blob/main/display-app-0.01.zip
+
 ## Build & Run
 
 1. Open `display-app/display-app.xcodeproj` in Xcode.
@@ -29,6 +32,9 @@ Follow this workflow to set up your environment correctly:
     *   Place this **Virtual Display** comfortably next to your main monitor. This is the screen you will actually use.
 5.  **Rotate**: If the orientation is wrong (e.g., Landscape vs Portrait), click **Rotate Virtual Display**.
 6.  **Final Sync**: Click **Restart Capture** to ensure the video feed is perfectly aligned.
+
+![IMG_3694](https://github.com/user-attachments/assets/ddc5d5e9-6871-4d1a-9bce-198173ad028e)
+
 
 ## Usage Guide
 
