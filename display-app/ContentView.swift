@@ -37,6 +37,12 @@ struct ContentView: View {
             .font(.system(size: 12, weight: .regular, design: .monospaced))
             .foregroundStyle(.secondary)
             HStack {
+                Button("Create Virtual Display") {
+                    controller.createMatchingVirtualDisplay()
+                }
+                Button("Rotate Virtual Display") {
+                    controller.rotateVirtualDisplay()
+                }
                 Button("Restart Capture") {
                     controller.restartCapture()
                 }

@@ -76,8 +76,63 @@ final class AppController: ObservableObject {
 
     private func start() {
         updateRendererSettings()
-        createVirtualDisplayIfNeeded()
+        // createVirtualDisplayIfNeeded()
         refreshDisplays()
+        startCaptureSession()
+    }
+
+    func createMatchingVirtualDisplay() {
+        let report = DisplaySelector.selectionReport()
+        guard let sidecar = report.sidecar else {
+            statusText = "Sidecar display not found"
+            return
+        }
+        
+        createVirtualDisplay(width: UInt(sidecar.size.width), height: UInt(sidecar.size.height))
+    }
+
+    func rotateVirtualDisplay() {
+        // If we have a virtual display, use its dimensions
+        if let current = virtualDisplayManager.currentDisplay {
+            createVirtualDisplay(width: current.height, height: current.width)
+            return
+        }
+        
+        // Fallback: If no virtual display exists, try to match Sidecar but rotated
+        let report = DisplaySelector.selectionReport()
+        if let sidecar = report.sidecar {
+            createVirtualDisplay(width: UInt(sidecar.size.height), height: UInt(sidecar.size.width))
+        } else {
+            statusText = "No display to rotate"
+        }
+    }
+
+    private func createVirtualDisplay(width: UInt, height: UInt) {
+        if let current = virtualDisplayManager.currentDisplay {
+            _ = virtualDisplayManager.destroyDisplay()
+        }
+        
+        do {
+            let info = try virtualDisplayManager.createDisplay(withWidth: width,
+                                                               height: height,
+                                                               frameRate: 60,
+                                                               hiDPI: true,
+                                                               name: "Virtual Sidecar Match",
+                                                               ppi: 264,
+                                                               mirror: false)
+            virtualDisplayInfo = info
+            UserDefaults.standard.set(Int(info.displayID), forKey: "virtualDisplayID")
+            statusText = "Created virtual display: \(width)x\(height)"
+            appendLog("Created virtual display: \(width)x\(height)")
+            refreshDisplays()
+            startCaptureSession()
+        } catch {
+            statusText = "Error creating display: \(error.localizedDescription)"
+            appendLog("Error creating display: \(error.localizedDescription)")
+        }
+    }
+
+    private func startCaptureSession() {
         guard let selection = displaySnapshot else {
             statusText = "No suitable displays found"
             return
@@ -99,25 +154,27 @@ final class AppController: ObservableObject {
         sidecarWindowController?.logState()
         appendLog("Sidecar window shown on id \(selection.sidecar.id)")
 
-        captureController = CaptureController(renderer: renderer,
-                                              statusHandler: { [weak self] message in
-                                                  Task { @MainActor in
-                                                      self?.statusText = message
-                                                  }
-                                              },
-                                              logHandler: { [weak self] message in
-                                                  Task { @MainActor in
-                                                      self?.appendLog(message)
-                                                  }
-                                              },
-                                              frameInfoHandler: { [weak self] captureSize, frameSize, contentSize in
-                                                  Task { @MainActor in
-                                                      self?.updateRotationForCapture(captureSize: captureSize,
-                                                                                      frameSize: frameSize,
-                                                                                      contentSize: contentSize)
-                                                  }
-                                              })
-        captureController?.updateUseContentRect(useContentRectEnabled)
+        if captureController == nil {
+            captureController = CaptureController(renderer: renderer,
+                                                  statusHandler: { [weak self] message in
+                                                      Task { @MainActor in
+                                                          self?.statusText = message
+                                                      }
+                                                  },
+                                                  logHandler: { [weak self] message in
+                                                      Task { @MainActor in
+                                                          self?.appendLog(message)
+                                                      }
+                                                  },
+                                                  frameInfoHandler: { [weak self] captureSize, frameSize, contentSize in
+                                                      Task { @MainActor in
+                                                          self?.updateRotationForCapture(captureSize: captureSize,
+                                                                                          frameSize: frameSize,
+                                                                                          contentSize: contentSize)
+                                                      }
+                                                  })
+            captureController?.updateUseContentRect(useContentRectEnabled)
+        }
 
         Task {
             await startCapture(displayID: selection.virtual.id)
