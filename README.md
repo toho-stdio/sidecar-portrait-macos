@@ -1,7 +1,7 @@
 # Rotated Sidecar (display-app)
 
 MacOS app that captures a virtual portrait display, rotates it, and shows it full-screen on a Sidecar display. It uses ScreenCaptureKit for capture and Metal for rotation/rendering.
-Heavily inspired by BetterDisplay sidecar portrait method https://github.com/waydabber/BetterDisplay/wiki/Rotated-Sidecar
+Heavily inspired by BetterDisplay sidecar portrait method https://github.com/waydabber/BetterDisplay/wiki/Rotated-Sidecar. Any PR for changes and improvement are welcome
 ## Requirements
 
 - macOS 14+
