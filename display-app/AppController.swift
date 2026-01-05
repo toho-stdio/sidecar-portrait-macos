@@ -31,6 +31,7 @@ final class AppController: ObservableObject {
     private var sidecarWindowController: SidecarWindowController?
     private var displaySnapshot: DisplaySelection?
     private var logLines: [String] = []
+    private var statusItem: NSStatusItem?
 
     init() {
         UserDefaults.standard.register(defaults: [
@@ -45,6 +46,45 @@ final class AppController: ObservableObject {
                                                selector: #selector(appWillTerminate),
                                                name: NSApplication.willTerminateNotification,
                                                object: nil)
+        setupStatusBar()
+    }
+
+    private func setupStatusBar() {
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        if let button = statusItem?.button {
+            button.image = NSImage(systemSymbolName: "display", accessibilityDescription: "Rotated Sidecar")
+        }
+        
+        let menu = NSMenu()
+        let showItem = NSMenuItem(title: "Show App", action: #selector(showApp), keyEquivalent: "s")
+        showItem.target = self
+        menu.addItem(showItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        let quitItem = NSMenuItem(title: "Quit", action: #selector(quitApp), keyEquivalent: "q")
+        quitItem.target = self
+        menu.addItem(quitItem)
+        
+        statusItem?.menu = menu
+    }
+
+    @objc func showApp() {
+        NSApp.setActivationPolicy(.regular)
+        NSApp.unhide(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        if let window = NSApp.windows.first {
+            window.makeKeyAndOrderFront(nil)
+        }
+    }
+    
+    @objc func quitApp() {
+        NSApplication.shared.terminate(nil)
+    }
+
+    func hideApp() {
+        NSApp.setActivationPolicy(.accessory)
+        NSApp.hide(nil)
     }
 
     func startIfNeeded() {
@@ -148,7 +188,9 @@ final class AppController: ObservableObject {
             return
         }
 
-        sidecarWindowController = SidecarWindowController(screen: sidecarScreen, renderer: renderer)
+        sidecarWindowController = SidecarWindowController(screen: sidecarScreen,
+                                                          renderer: renderer,
+                                                          virtualDisplayID: selection.virtual.id)
         sidecarWindowController?.setDebugOverlay(enabled: debugOverlayEnabled)
         sidecarWindowController?.show()
         sidecarWindowController?.logState()

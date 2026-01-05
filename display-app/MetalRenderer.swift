@@ -39,6 +39,14 @@ final class MetalRenderer {
     private var renderMode: RenderMode = .normal
     private var frameCounter: Int = 0
 
+    struct RenderSettings {
+        var scale: Float
+        var rotation: RotationMode
+        var contentRect: CGRect
+    }
+    
+    private(set) var currentSettings: RenderSettings = RenderSettings(scale: 1.0, rotation: .ccw, contentRect: .zero)
+
     weak var layer: CAMetalLayer? {
         didSet {
             layer?.device = device
@@ -187,6 +195,10 @@ final class MetalRenderer {
             NSLog("Renderer target: content %.0fx%.0f target %.0fx%.0f mode %@",
                   contentWidth, contentHeight, targetWidth, targetHeight, modeText)
         }
+        
+        // Update current settings for input mapping
+        currentSettings = RenderSettings(scale: scaleValue, rotation: rotationMode, contentRect: contentRect)
+
         frameCounter += 1
 
         let renderPassDescriptor = MTLRenderPassDescriptor()
