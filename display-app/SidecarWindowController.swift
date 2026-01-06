@@ -9,7 +9,7 @@ import AppKit
 import CoreGraphics
 
 final class SidecarWindowController {
-    private let window: NSWindow
+    let window: NSWindow
     private let metalView: MetalDisplayView
     private let overlayLabel: NSTextField
     private let overlayView: NSView

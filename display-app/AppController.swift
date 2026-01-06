@@ -71,9 +71,14 @@ final class AppController: ObservableObject {
 
     @objc func showApp() {
         NSApp.setActivationPolicy(.regular)
-        NSApp.unhide(nil)
+        // NSApp.unhide(nil) // Not needed if we manually managed windows
         NSApp.activate(ignoringOtherApps: true)
-        if let window = NSApp.windows.first {
+        
+        for window in NSApp.windows {
+            if let sidecarWindow = sidecarWindowController?.window, window == sidecarWindow {
+                continue
+            }
+            // Assume this is the main window or other utility windows
             window.makeKeyAndOrderFront(nil)
         }
     }
@@ -83,8 +88,16 @@ final class AppController: ObservableObject {
     }
 
     func hideApp() {
+        appendLog("Hiding app (accessory mode)")
         NSApp.setActivationPolicy(.accessory)
-        NSApp.hide(nil)
+        
+        // Hide only the main window, keep sidecar visible
+        for window in NSApp.windows {
+            if let sidecarWindow = sidecarWindowController?.window, window == sidecarWindow {
+                continue
+            }
+            window.orderOut(nil)
+        }
     }
 
     func startIfNeeded() {

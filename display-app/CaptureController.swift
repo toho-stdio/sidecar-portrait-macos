@@ -9,7 +9,7 @@ import Foundation
 import ScreenCaptureKit
 import CoreMedia
 
-final class CaptureController: NSObject, SCStreamOutput {
+final class CaptureController: NSObject, SCStreamOutput, SCStreamDelegate {
     private let renderer: MetalRenderer
     private let statusHandler: (String) -> Void
     private let logHandler: (String) -> Void
@@ -59,7 +59,7 @@ final class CaptureController: NSObject, SCStreamOutput {
             configuration.height = mode.pixelHeight
         }
 
-        let stream = SCStream(filter: filter, configuration: configuration, delegate: nil)
+        let stream = SCStream(filter: filter, configuration: configuration, delegate: self)
         try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: outputQueue)
         try await stream.startCapture()
         self.stream = stream
@@ -118,6 +118,13 @@ final class CaptureController: NSObject, SCStreamOutput {
             logHandler("Frame \(frameCount)")
             NSLog("Frame %d", frameCount)
         }
+    }
+
+    func stream(_ stream: SCStream, didStopWithError error: Error) {
+        let msg = "Stream stopped with error: \(error.localizedDescription)"
+        statusHandler(msg)
+        logHandler(msg)
+        NSLog("%@", msg)
     }
 
     private func updateContentRect(info: ContentRectInfo?) {
